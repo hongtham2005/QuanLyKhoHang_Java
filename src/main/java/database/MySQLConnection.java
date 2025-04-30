@@ -4,28 +4,24 @@
  */
 package database;
 
-/**
- *
- * @author hong tham
- */
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+/**
+ *
+ * @author hong tham
+ */
 public class MySQLConnection {
-    public static void main(String[] args) {
-        String url = "jdbc:mysql://localhost:3306/quanlykho"; 
-        String user = "root"; 
-        String password = "nht666234"; 
+    private static final String URL = "jdbc:mysql://localhost:3306/quanlykho";
+    private static final String USER = "root";
+    private static final String PASSWORD = "nht666234";
 
-        try (Connection conn = DriverManager.getConnection(url, user, password)) {
-            System.out.println("Kết nối thành công!");
+    public static Connection getConnection() throws SQLException {
+        try {
+            return DriverManager.getConnection(URL, USER, PASSWORD);
         } catch (SQLException e) {
-            System.out.println("Lỗi kết nối: " + e.getMessage());
+            throw new SQLException("Lỗi kết nối cơ sở dữ liệu: " + e.getMessage(), e);
         }
-    }
-
-    static Connection getConnection() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }

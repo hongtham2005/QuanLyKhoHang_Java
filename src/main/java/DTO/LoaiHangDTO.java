@@ -27,9 +27,7 @@ public class LoaiHangDTO {
         return maLoaiHang;
     }
 
-    public void setMaLoaiHang(
-            int maLoaiHang
-    ) {
+    public void setMaLoaiHang(int maLoaiHang) {
         this.maLoaiHang = maLoaiHang;
     }
 
@@ -37,9 +35,7 @@ public class LoaiHangDTO {
         return tenLoaiHang;
     }
 
-    public void setTenLoaiHang(
-            String tenLoaiHang
-    ) {
+    public void setTenLoaiHang(String tenLoaiHang) {
         this.tenLoaiHang = tenLoaiHang;
     }
 }

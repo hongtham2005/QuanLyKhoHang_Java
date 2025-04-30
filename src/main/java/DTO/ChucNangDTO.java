@@ -1,3 +1,5 @@
+package DTO;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
@@ -14,21 +16,16 @@ public class ChucNangDTO {
     public ChucNangDTO() {
     }
 
-    public ChucNangDTO(
-            int maChucNang, 
-            String tenChucNang
-    ) {
+    public ChucNangDTO(int maChucNang, String tenChucNang){
         this.maChucNang = maChucNang;
         this.tenChucNang = tenChucNang;
     }
 
-    public int getMaChucNang() {
+    public int getMaChucNang(){
         return maChucNang;
     }
 
-    public void setMaChucNang(
-            int maChucNang
-    ) {
+    public void setMaChucNang(int maChucNang){
         this.maChucNang = maChucNang;
     }
 
@@ -36,9 +33,7 @@ public class ChucNangDTO {
         return tenChucNang;
     }
 
-    public void setTenChucNang(
-            String tenChucNang
-    ) {
+    public void setTenChucNang(String tenChucNang){
         this.tenChucNang = tenChucNang;
     }
 }
