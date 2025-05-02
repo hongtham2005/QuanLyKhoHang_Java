@@ -1,157 +1,91 @@
 package DAO;
 
 import DTO.SanPhamDTO;
-import database.MySQLConnection;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import Database.MyConnect;
+
+import java.sql.*;
 import java.util.ArrayList;
-import java.util.List;
-import java.math.BigDecimal;
-import java.util.Date;
 
-/**
- * @author hong tham
- */
 public class SanPhamDAO {
+    Connection conn;
 
-    public List<SanPhamDTO> layDanhSachSanPham() throws SQLException {
-        List<SanPhamDTO> danhSach = new ArrayList<>();
+    public SanPhamDAO() throws Exception {
+        conn = MyConnect.getConnection();
+    }
+
+    // Đọc danh sách sản phẩm
+    public ArrayList<SanPhamDTO> docDSSanPham() throws Exception {
+        ArrayList<SanPhamDTO> ds = new ArrayList<>();
         String sql = "SELECT * FROM SanPham";
-        
-        try (Connection conn = MySQLConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-            while (rs.next()) {
-                SanPhamDTO sp = new SanPhamDTO();
-                sp.setMaSanPham(rs.getInt("MaSanPham"));
-                sp.setTenSanPham(rs.getString("TenSanPham"));
-                sp.setHanSuDung(rs.getDate("HanSuDung"));
-                sp.setGiaNhap(rs.getBigDecimal("GiaNhap"));
-                sp.setGiaXuat(rs.getBigDecimal("GiaXuat"));
-                sp.setHinhAnh(rs.getString("HinhAnh"));
-                sp.setMaLoaiHang(rs.getInt("MaLoaiHang"));
-                danhSach.add(sp);
-            }
+        Statement stmt = conn.createStatement();
+        ResultSet rs = stmt.executeQuery(sql);
+
+        while (rs.next()) {
+            ds.add(new SanPhamDTO(
+                rs.getInt("MaSanPham"),
+                rs.getString("TenSanPham"),
+                rs.getString("XuatXu"),
+                rs.getDate("HanSuDung"),
+                rs.getDouble("GiaNhap"),
+                rs.getDouble("GiaXuat"),
+                rs.getString("HinhAnh"),
+                rs.getInt("MaDonViTinh"),
+                rs.getInt("MaLoaiHang")
+            ));
         }
-        return danhSach;
+        return ds;
     }
 
-    // New method to search products by name and category
-    public List<SanPhamDTO> timKiemSanPham(String tenSanPham, Integer maLoaiHang) throws SQLException {
-        List<SanPhamDTO> danhSach = new ArrayList<>();
-        StringBuilder sql = new StringBuilder("SELECT * FROM SanPham WHERE 1=1");
-        
-        if (tenSanPham != null && !tenSanPham.trim().isEmpty()) {
-            sql.append(" AND TenSanPham LIKE ?");
-        }
-        if (maLoaiHang != null && maLoaiHang > 0) {
-            sql.append(" AND MaLoaiHang = ?");
-        }
-
-        try (Connection conn = MySQLConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
-            int paramIndex = 1;
-            if (tenSanPham != null && !tenSanPham.trim().isEmpty()) {
-                stmt.setString(paramIndex++, "%" + tenSanPham + "%");
-            }
-            if (maLoaiHang != null && maLoaiHang > 0) {
-                stmt.setInt(paramIndex, maLoaiHang);
-            }
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    SanPhamDTO sp = new SanPhamDTO();
-                    sp.setMaSanPham(rs.getInt("MaSanPham"));
-                    sp.setTenSanPham(rs.getString("TenSanPham"));
-                    sp.setHanSuDung(rs.getDate("HanSuDung"));
-                    sp.setGiaNhap(rs.getBigDecimal("GiaNhap"));
-                    sp.setGiaXuat(rs.getBigDecimal("GiaXuat"));
-                    sp.setHinhAnh(rs.getString("HinhAnh"));
-                    sp.setMaLoaiHang(rs.getInt("MaLoaiHang"));
-                    danhSach.add(sp);
-                }
-            }
-        }
-        return danhSach;
+    // Thêm sản phẩm
+    public void them(SanPhamDTO sp) throws Exception {
+        String sql = "INSERT INTO SanPham (MaSanPham, TenSanPham, XuatXu, HanSuDung, GiaNhap, GiaXuat, HinhAnh, MaDonViTinh, MaLoaiHang) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setInt(1, sp.getMaSanPham());
+        ps.setString(2, sp.getTenSanPham());
+        ps.setString(3, sp.getXuatXu());
+        ps.setDate(4, new java.sql.Date(sp.getHanSuDung().getTime()));
+        ps.setDouble(5, sp.getGiaNhap());
+        ps.setDouble(6, sp.getGiaXuat());
+        ps.setString(7, sp.getHinhAnh());
+        ps.setInt(8, sp.getMaDonViTinh());
+        ps.setInt(9, sp.getMaLoaiHang());
+        ps.executeUpdate();
     }
 
-    public int themSanPham(SanPhamDTO sp) throws SQLException {
-        String sql = "INSERT INTO SanPham (TenSanPham, HanSuDung, GiaNhap, GiaXuat, HinhAnh, MaLoaiHang) VALUES (?, ?, ?, ?, ?, ?)";
-        
-        try (Connection conn = MySQLConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
-            stmt.setString(1, sp.getTenSanPham());
-            stmt.setDate(2, new java.sql.Date(sp.getHanSuDung().getTime()));
-            stmt.setBigDecimal(3, sp.getGiaNhap());
-            stmt.setBigDecimal(4, sp.getGiaXuat());
-            stmt.setString(5, sp.getHinhAnh());
-            stmt.setInt(6, sp.getMaLoaiHang());
-            stmt.executeUpdate();
-
-            try (ResultSet rs = stmt.getGeneratedKeys()) {
-                if (rs.next()) {
-                    return rs.getInt(1);
-                }
-            }
-        }
-        return -1;
+    // Sửa sản phẩm
+    public void sua(SanPhamDTO sp) throws Exception {
+        String sql = "UPDATE SanPham SET TenSanPham=?, XuatXu=?, HanSuDung=?, GiaNhap=?, GiaXuat=?, HinhAnh=?, MaDonViTinh=?, MaLoaiHang=? " +
+                     "WHERE MaSanPham=?";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1, sp.getTenSanPham());
+        ps.setString(2, sp.getXuatXu());
+        ps.setDate(3, new java.sql.Date(sp.getHanSuDung().getTime()));
+        ps.setDouble(4, sp.getGiaNhap());
+        ps.setDouble(5, sp.getGiaXuat());
+        ps.setString(6, sp.getHinhAnh());
+        ps.setInt(7, sp.getMaDonViTinh());
+        ps.setInt(8, sp.getMaLoaiHang());
+        ps.setInt(9, sp.getMaSanPham());
+        ps.executeUpdate();
     }
 
-    public void suaSanPham(SanPhamDTO sp) throws SQLException {
-        String sql = "UPDATE SanPham SET TenSanPham = ?, HanSuDung = ?, GiaNhap = ?, GiaXuat = ?, HinhAnh = ?, MaLoaiHang = ? WHERE MaSanPham = ?";
-        
-        try (Connection conn = MySQLConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, sp.getTenSanPham());
-            stmt.setDate(2, new java.sql.Date(sp.getHanSuDung().getTime()));
-            stmt.setBigDecimal(3, sp.getGiaNhap());
-            stmt.setBigDecimal(4, sp.getGiaXuat());
-            stmt.setString(5, sp.getHinhAnh());
-            stmt.setInt(6, sp.getMaLoaiHang());
-            stmt.setInt(7, sp.getMaSanPham());
-            stmt.executeUpdate();
-        }
+    // Xóa sản phẩm (có thể sửa để xóa mềm nếu cần)
+    public void xoa(int maSanPham) throws Exception {
+        String sql = "DELETE FROM SanPham WHERE MaSanPham=?";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setInt(1, maSanPham);
+        ps.executeUpdate();
     }
 
-    public void xoaSanPham(int maSanPham) throws SQLException {
-        String sql = "DELETE FROM SanPham WHERE MaSanPham = ?";
-        
-        try (Connection conn = MySQLConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, maSanPham);
-            stmt.executeUpdate();
+    // Lấy mã sản phẩm tiếp theo
+    public int layMaTiepTheo() throws Exception {
+        String sql = "SELECT MAX(MaSanPham) FROM SanPham";
+        Statement st = conn.createStatement();
+        ResultSet rs = st.executeQuery(sql);
+        if (rs.next()) {
+            return rs.getInt(1) + 1;
         }
-    }
-
-    public String layHinhAnhSanPham(int maSanPham) throws SQLException {
-        String sql = "SELECT HinhAnh FROM SanPham WHERE MaSanPham = ?";
-        
-        try (Connection conn = MySQLConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, maSanPham);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getString("HinhAnh");
-                }
-            }
-        }
-        return null;
-    }
-
-    public int layMaLoaiHangSanPham(int maSanPham) throws SQLException {
-        String sql = "SELECT MaLoaiHang FROM SanPham WHERE MaSanPham = ?";
-        
-        try (Connection conn = MySQLConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, maSanPham);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt("MaLoaiHang");
-                }
-            }
-        }
-        return -1;
+        return 1;
     }
 }
