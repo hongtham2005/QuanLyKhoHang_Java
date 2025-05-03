@@ -33,17 +33,18 @@ public class ChiTietQuyenDAO {
         return danhSach;
     }
 
-    // Kiểm tra xem nhóm quyền có quyền thực hiện hành động trên chức năng hay không
     public boolean kiemTraQuyen(int maNhomQuyen, int maChucNang, String hanhDong) throws SQLException {
-        String sql = "SELECT * FROM ChiTietQuyen WHERE MaNhomQuyen = ? AND MaChucNang = ? AND HanhDong = ?";
-        
+        String sql = "SELECT COUNT(*) FROM ChiTietQuyen_HanhDong WHERE MaNhomQuyen = ? AND MaChucNang = ? AND HanhDong = ?";
         try (Connection conn = MySQLConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, maNhomQuyen);
             stmt.setInt(2, maChucNang);
             stmt.setString(3, hanhDong);
             ResultSet rs = stmt.executeQuery();
-            return rs.next(); // Trả về true nếu có quyền, false nếu không
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
         }
+        return false;
     }
 }

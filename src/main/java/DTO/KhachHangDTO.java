@@ -6,9 +6,9 @@ public class KhachHangDTO {
     private String diaChi;
     private String soDienThoai;
     private String trangThai;
+    private String email;
 
-    // Constructors
- // Constructor KHÔNG có mã (dùng khi thêm mới)
+    // Constructor không có mã (dùng khi thêm mới)
     public KhachHangDTO(String ten, String diaChi, String soDienThoai) {
         this.tenKhachHang = ten;
         this.diaChi = diaChi;
@@ -16,7 +16,7 @@ public class KhachHangDTO {
         this.trangThai = "Hoạt động";
     }
 
-    // Constructor CÓ mã (dùng khi sửa)
+    // Constructor có mã (dùng khi sửa)
     public KhachHangDTO(int ma, String ten, String diaChi, String soDienThoai) {
         this.maKhachHang = ma;
         this.tenKhachHang = ten;
@@ -24,14 +24,18 @@ public class KhachHangDTO {
         this.soDienThoai = soDienThoai;
     }
 
-    public KhachHangDTO() {}
-    public KhachHangDTO(int ma, String ten, String diaChi, String sdt, String trangThai) {
+    // Constructor đầy đủ (bao gồm TrangThai và Email)
+    public KhachHangDTO(int ma, String ten, String diaChi, String sdt, String trangThai, String email) {
         this.maKhachHang = ma;
         this.tenKhachHang = ten;
         this.diaChi = diaChi;
         this.soDienThoai = sdt;
         this.trangThai = trangThai;
+        this.email = email;
     }
+
+    // Constructor mặc định
+    public KhachHangDTO() {}
 
     // Getters + Setters
     public int getMaKhachHang() { return maKhachHang; }
@@ -45,11 +49,10 @@ public class KhachHangDTO {
 
     public String getSoDienThoai() { return soDienThoai; }
     public void setSoDienThoai(String sdt) { this.soDienThoai = sdt; }
-    
-    public String getTrangThai() {
-        return trangThai;
-    }
-    public void setTrangThai(String trangThai) {
-        this.trangThai = trangThai;
-    }
+
+    public String getTrangThai() { return trangThai; }
+    public void setTrangThai(String trangThai) { this.trangThai = trangThai; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 }

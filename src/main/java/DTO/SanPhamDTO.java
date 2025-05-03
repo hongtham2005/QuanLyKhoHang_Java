@@ -10,7 +10,6 @@ public class SanPhamDTO {
     private double giaNhap;
     private double giaXuat;
     private String hinhAnh;
-    private int maDonViTinh;
     private int maLoaiHang;
 
     // Constructor mặc định

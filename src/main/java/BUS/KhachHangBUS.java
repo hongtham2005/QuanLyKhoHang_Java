@@ -9,6 +9,10 @@ public class KhachHangBUS {
     private ArrayList<KhachHangDTO> ds;
 
     public KhachHangBUS() throws Exception {
+        taiDuLieuMoi();
+    }
+
+    private void taiDuLieuMoi() throws Exception {
         KhachHangDAO dao = new KhachHangDAO();
         ds = dao.docDSKhachHang();
     }
@@ -19,7 +23,9 @@ public class KhachHangBUS {
 
     public void them(KhachHangDTO kh) throws Exception {
         ds.add(kh);
-        new KhachHangDAO().them(kh);
+        KhachHangDAO dao = new KhachHangDAO();
+        dao.them(kh);
+        taiDuLieuMoi(); // Làm mới danh sách
     }
 
     public void sua(KhachHangDTO kh) throws Exception {
@@ -29,11 +35,20 @@ public class KhachHangBUS {
                 break;
             }
         }
-        new KhachHangDAO().sua(kh);
+        KhachHangDAO dao = new KhachHangDAO();
+        dao.sua(kh);
+        taiDuLieuMoi(); // Làm mới danh sách
     }
 
     public void xoa(int ma) throws Exception {
         ds.removeIf(kh -> kh.getMaKhachHang() == ma);
-        new KhachHangDAO().xoa(ma);
+        KhachHangDAO dao = new KhachHangDAO();
+        dao.xoa(ma);
+        taiDuLieuMoi(); // Làm mới danh sách
+    }
+
+    public KhachHangDTO timKiemTheoMa(int ma) throws Exception {
+        KhachHangDAO dao = new KhachHangDAO();
+        return dao.timKiemTheoMa(ma);
     }
 }

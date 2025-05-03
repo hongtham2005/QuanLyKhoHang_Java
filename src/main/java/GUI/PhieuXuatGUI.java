@@ -1,11 +1,10 @@
 package GUI;
 
 import BUS.PhieuXuatBUS;
-import BUS.SanPhamBUS;
 import DTO.PhieuXuatDTO;
-import DTO.SanPhamDTO;
+import DTO.ChiTietPhieuXuatDTO;
 import DAO.KhachHangDAO;
-import DAO.NhanVienDAO; // Thêm import cho NhanVienDAO
+import DAO.NhanVienDAO;
 import DTO.KhachHangDTO;
 
 import javax.swing.*;
@@ -22,7 +21,6 @@ public class PhieuXuatGUI extends JFrame {
     private JTable tableDanhSach;
     private DefaultTableModel tableModel;
     private PhieuXuatBUS bus;
-    private SanPhamBUS sanPhamBus;
     private ArrayList<KhachHangDTO> dsKH;
     private int maNhomQuyen;
     private MenuChinhGUI menuChinh;
@@ -154,7 +152,6 @@ public class PhieuXuatGUI extends JFrame {
         // Load dữ liệu
         try {
             bus = new PhieuXuatBUS();
-            sanPhamBus = new SanPhamBUS();
             dsKH = new KhachHangDAO().docDSKhachHang();
 
             cboLocKH.addItem("Tất cả");
@@ -303,11 +300,11 @@ public class PhieuXuatGUI extends JFrame {
 
     private String layDanhSachSanPham(int maPhieuXuat) {
         try {
-            ArrayList<SanPhamDTO> dsSanPham = sanPhamBus.layDanhSachSanPhamTheoPhieuXuat(maPhieuXuat);
+            ArrayList<ChiTietPhieuXuatDTO> dsSanPham = bus.layDanhSachSanPhamTheoPhieuXuat(maPhieuXuat);
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < dsSanPham.size(); i++) {
-                SanPhamDTO sp = dsSanPham.get(i);
-                sb.append(sp.getMaSanPham()).append(" - ").append(sp.getTenSanPham());
+                ChiTietPhieuXuatDTO ctpx = dsSanPham.get(i);
+                sb.append(ctpx.getMaSanPham()).append(" - ").append(ctpx.getTenSanPham() != null ? ctpx.getTenSanPham() : "Không có tên");
                 if (i < dsSanPham.size() - 1) sb.append(", ");
             }
             return sb.length() > 0 ? sb.toString() : "Chưa có sản phẩm";
@@ -325,10 +322,10 @@ public class PhieuXuatGUI extends JFrame {
     // Hàm lấy mã nhân viên từ email
     private Integer layMaNhanVienTuTaiKhoan(String email) {
         try {
-            NhanVienDAO nhanVienDAO = new NhanVienDAO(); // Khởi tạo NhanVienDAO
-            return nhanVienDAO.layMaNhanVienTheoEmail(email); // Gọi phương thức từ NhanVienDAO
+            NhanVienDAO nhanVienDAO = new NhanVienDAO();
+            return nhanVienDAO.layMaNhanVienTheoEmail(email);
         } catch (Exception e) {
-            return null; // Trả về null nếu có lỗi
+            return null;
         }
     }
 }

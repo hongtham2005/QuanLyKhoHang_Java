@@ -6,10 +6,12 @@ public class PhieuXuatDTO {
     private int maPhieuXuat;
     private Date thoiGian;
     private String trangThai;
-    private int nguoiTao;
+    private Integer nguoiTao; 
     private int maKhachHang;
 
-    public PhieuXuatDTO(int maPhieuXuat, Date thoiGian, String trangThai, int nguoiTao, int maKhachHang) {
+    public PhieuXuatDTO() {}
+
+    public PhieuXuatDTO(int maPhieuXuat, Date thoiGian, String trangThai, Integer nguoiTao, int maKhachHang) {
         this.maPhieuXuat = maPhieuXuat;
         this.thoiGian = thoiGian;
         this.trangThai = trangThai;
@@ -42,11 +44,11 @@ public class PhieuXuatDTO {
         this.trangThai = trangThai;
     }
 
-    public int getNguoiTao() {
+    public Integer getNguoiTao() {
         return nguoiTao;
     }
 
-    public void setNguoiTao(int nguoiTao) {
+    public void setNguoiTao(Integer nguoiTao) {
         this.nguoiTao = nguoiTao;
     }
 
