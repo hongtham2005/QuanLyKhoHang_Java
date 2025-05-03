@@ -47,7 +47,7 @@ public class SanPhamGUI extends JFrame {
         }
 
         setTitle("Quản lý Sản Phẩm");
-        setSize(800, 600);
+        setSize(1000, 800);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
         setLocationRelativeTo(null);

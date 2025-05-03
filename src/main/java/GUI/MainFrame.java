@@ -26,7 +26,7 @@ public class MainFrame extends JFrame {
 
         setTitle("Quản Lý Kho Hàng");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 600);
+        setSize(900, 700);
         setBackground(Color.WHITE);
         setLocationRelativeTo(null);
 

@@ -4,9 +4,9 @@ import DAO.TaiKhoanDAO;
 import DTO.TaiKhoanDTO;
 import com.formdev.flatlaf.FlatLightLaf;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import javax.swing.*;
 
 public class DangNhapGUI extends JFrame {
     private JTextField tfEmail;
@@ -21,23 +21,56 @@ public class DangNhapGUI extends JFrame {
         }
 
         setTitle("Đăng nhập hệ thống");
-        setSize(300, 200);
+        setSize(500, 300);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLayout(new FlowLayout());
         setLocationRelativeTo(null);
+        setResizable(false);
 
-        add(new JLabel("Email:"));
+        JPanel panelMain = new JPanel();
+        panelMain.setLayout(new BoxLayout(panelMain, BoxLayout.Y_AXIS));
+        panelMain.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40)); // Padding
+        panelMain.setBackground(Color.WHITE);
+
+        JLabel lblTitle = new JLabel("Đăng nhập hệ thống");
+        lblTitle.setFont(new Font("Arial", Font.BOLD, 20));
+        lblTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+        lblTitle.setForeground(new Color(0, 122, 204));
+        panelMain.add(lblTitle);
+
+        panelMain.add(Box.createVerticalStrut(20));
+
+        JLabel lblEmail = new JLabel("Email:");
         tfEmail = new JTextField(20);
-        add(tfEmail);
+        tfEmail.setMaximumSize(tfEmail.getPreferredSize());
 
-        add(new JLabel("Mật khẩu:"));
+        JLabel lblMatKhau = new JLabel("Mật khẩu:");
         tfMatKhau = new JPasswordField(20);
-        add(tfMatKhau);
+        tfMatKhau.setMaximumSize(tfMatKhau.getPreferredSize());
+
+        lblEmail.setAlignmentX(Component.CENTER_ALIGNMENT);
+        tfEmail.setAlignmentX(Component.CENTER_ALIGNMENT);
+        lblMatKhau.setAlignmentX(Component.CENTER_ALIGNMENT);
+        tfMatKhau.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        panelMain.add(lblEmail);
+        panelMain.add(tfEmail);
+        panelMain.add(Box.createVerticalStrut(10));
+        panelMain.add(lblMatKhau);
+        panelMain.add(tfMatKhau);
+        panelMain.add(Box.createVerticalStrut(20));
 
         JButton btnDangNhap = new JButton("Đăng nhập");
-        btnDangNhap.setBackground(new Color(0, 196, 228));
+        btnDangNhap.setBackground(new Color(0, 122, 204));
         btnDangNhap.setForeground(Color.WHITE);
-        add(btnDangNhap);
+        btnDangNhap.setFocusPainted(false);
+        btnDangNhap.setFont(new Font("Arial", Font.BOLD, 14));
+        btnDangNhap.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnDangNhap.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnDangNhap.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+
+        panelMain.add(btnDangNhap);
+
+        add(panelMain);
 
         btnDangNhap.addActionListener(e -> {
             String email = tfEmail.getText().trim();
@@ -55,20 +88,12 @@ public class DangNhapGUI extends JFrame {
                 if (tk != null && !"Đã xóa".equalsIgnoreCase(tk.getTrangThai())) {
                     JOptionPane.showMessageDialog(this, "Đăng nhập thành công!");
                     dispose();
-                    new MenuChinhGUI(tk.getMaNhomQuyen()).setVisible(true); // Truyền maNhomQuyen
+                    new MenuChinhGUI(tk.getMaNhomQuyen(), email).setVisible(true); // Truyền email
                 } else {
                     JOptionPane.showMessageDialog(this, "Sai email hoặc mật khẩu, hoặc tài khoản đã bị xóa.");
                 }
             } catch (Exception ex) {
-                ex.printStackTrace();
                 JOptionPane.showMessageDialog(this, "Lỗi kết nối: " + ex.getMessage());
-            }
-        });
-
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent we) {
-                dispose();
             }
         });
 
@@ -76,6 +101,6 @@ public class DangNhapGUI extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new DangNhapGUI().setVisible(true));
+        SwingUtilities.invokeLater(() -> new DangNhapGUI());
     }
 }

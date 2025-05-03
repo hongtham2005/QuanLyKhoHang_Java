@@ -14,8 +14,6 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -39,9 +37,6 @@ public class QuanLySanPhamPanel extends JPanel {
         this.maNhomQuyen = maNhomQuyen;
         try {
             sanPhamDAO = new SanPhamDAO();
-            if (!sanPhamDAO.isConnectionValid()) {
-                throw new SQLException("Kết nối cơ sở dữ liệu không khả dụng.");
-            }
             loaiHangDAO = new LoaiHangDAO();
             chiTietQuyenDAO = new ChiTietQuyenDAO();
         } catch (SQLException e) {
@@ -352,10 +347,6 @@ public class QuanLySanPhamPanel extends JPanel {
 
     private void timKiemSanPham() {
         try {
-            if (!sanPhamDAO.isConnectionValid()) {
-                JOptionPane.showMessageDialog(this, "Kết nối cơ sở dữ liệu không khả dụng.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
             String tenSanPham = txtTimKiemTen.getText().trim();
             Integer maLoaiHang = null;
             int selectedIndex = cbTimKiemLoaiHang.getSelectedIndex();
@@ -462,10 +453,6 @@ public class QuanLySanPhamPanel extends JPanel {
 
     private void taiDanhSachSanPham() {
         try {
-            if (!sanPhamDAO.isConnectionValid()) {
-                JOptionPane.showMessageDialog(this, "Kết nối cơ sở dữ liệu không khả dụng.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
             List<SanPhamDTO> danhSach = sanPhamDAO.docDSSanPham();
             moHinhBang.setRowCount(0);
             for (SanPhamDTO sp : danhSach) {
@@ -484,11 +471,6 @@ public class QuanLySanPhamPanel extends JPanel {
 
     private void themSanPham() {
         try {
-            if (!sanPhamDAO.isConnectionValid()) {
-                JOptionPane.showMessageDialog(this, "Kết nối cơ sở dữ liệu không khả dụng.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
             String tenSanPham = txtTenSanPham.getText().trim();
             if (!isValidTenSanPham(tenSanPham)) {
                 JOptionPane.showMessageDialog(this, "Tên sản phẩm không hợp lệ! Vui lòng nhập tên có ý nghĩa.", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
@@ -550,11 +532,6 @@ public class QuanLySanPhamPanel extends JPanel {
 
     private void suaSanPham() {
         try {
-            if (!sanPhamDAO.isConnectionValid()) {
-                JOptionPane.showMessageDialog(this, "Kết nối cơ sở dữ liệu không khả dụng.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
             if (txtMaSanPham.getText().trim().isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Vui lòng chọn sản phẩm để sửa!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
                 return;
@@ -622,11 +599,6 @@ public class QuanLySanPhamPanel extends JPanel {
 
     private void xoaSanPham() {
         try {
-            if (!sanPhamDAO.isConnectionValid()) {
-                JOptionPane.showMessageDialog(this, "Kết nối cơ sở dữ liệu không khả dụng.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
             int dongChon = bangSanPham.getSelectedRow();
             if (dongChon == -1) {
                 JOptionPane.showMessageDialog(this, "Vui lòng chọn sản phẩm để xóa!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
@@ -651,11 +623,6 @@ public class QuanLySanPhamPanel extends JPanel {
         int dongChon = bangSanPham.getSelectedRow();
         if (dongChon != -1) {
             try {
-                if (!sanPhamDAO.isConnectionValid()) {
-                    JOptionPane.showMessageDialog(this, "Kết nối cơ sở dữ liệu không khả dụng.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
                 int maSanPham = (int) moHinhBang.getValueAt(dongChon, 0);
                 txtMaSanPham.setText(String.valueOf(moHinhBang.getValueAt(dongChon, 0)));
                 txtTenSanPham.setText(String.valueOf(moHinhBang.getValueAt(dongChon, 1)));
