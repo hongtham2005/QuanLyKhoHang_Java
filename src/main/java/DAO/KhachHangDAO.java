@@ -1,7 +1,7 @@
 package DAO;
 
 import DTO.KhachHangDTO;
-import Database.MyConnect;
+import database.MySQLConnection;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -10,7 +10,7 @@ public class KhachHangDAO {
     Connection conn;
 
     public KhachHangDAO() throws Exception {
-        conn = MyConnect.getConnection();
+        conn = MySQLConnection.getConnection();
     }
 
     public ArrayList<KhachHangDTO> docDSKhachHang() throws Exception {

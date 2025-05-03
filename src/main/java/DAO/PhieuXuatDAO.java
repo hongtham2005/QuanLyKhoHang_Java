@@ -1,7 +1,7 @@
 package DAO;
 
 import DTO.PhieuXuatDTO;
-import Database.MyConnect;
+import database.MySQLConnection;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -10,7 +10,7 @@ public class PhieuXuatDAO {
     Connection conn;
 
     public PhieuXuatDAO() throws Exception {
-        conn = MyConnect.getConnection();
+        conn = MySQLConnection.getConnection();
     }
 
     // Lấy danh sách tất cả phiếu xuất

@@ -227,8 +227,5 @@ public class KhachHangGUI extends Frame {
         }
     }
 
-    public static void main(String[] args) {
-        new KhachHangGUI();
-    }
 }
 

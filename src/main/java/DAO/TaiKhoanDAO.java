@@ -1,7 +1,7 @@
 package DAO;
 
 import DTO.TaiKhoanDTO;
-import Database.MyConnect;
+import database.MySQLConnection;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -10,7 +10,7 @@ public class TaiKhoanDAO {
     Connection conn;
 
     public TaiKhoanDAO() throws Exception {
-        conn = MyConnect.getConnection(); // Kết nối CSDL
+        conn = MySQLConnection.getConnection(); // Kết nối CSDL
     }
 
     // Lấy toàn bộ danh sách tài khoản

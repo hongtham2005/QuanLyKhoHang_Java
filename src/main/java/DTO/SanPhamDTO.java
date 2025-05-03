@@ -13,9 +13,21 @@ public class SanPhamDTO {
     private int maDonViTinh;
     private int maLoaiHang;
 
+    // Constructor mặc định
+    public SanPhamDTO() {
+        this.maSanPham = 0;
+        this.tenSanPham = "";
+        this.xuatXu = "";
+        this.hanSuDung = new Date();
+        this.giaNhap = 0.0;
+        this.giaXuat = 0.0;
+        this.hinhAnh = "";
+        this.maLoaiHang = 0;
+    }
+
     public SanPhamDTO(int maSanPham, String tenSanPham, String xuatXu, Date hanSuDung,
                       double giaNhap, double giaXuat, String hinhAnh,
-                      int maDonViTinh, int maLoaiHang) {
+                      int maLoaiHang) {
         this.maSanPham = maSanPham;
         this.tenSanPham = tenSanPham;
         this.xuatXu = xuatXu;
@@ -23,7 +35,6 @@ public class SanPhamDTO {
         this.giaNhap = giaNhap;
         this.giaXuat = giaXuat;
         this.hinhAnh = hinhAnh;
-        this.maDonViTinh = maDonViTinh;
         this.maLoaiHang = maLoaiHang;
     }
 
@@ -82,14 +93,6 @@ public class SanPhamDTO {
 
     public void setHinhAnh(String hinhAnh) {
         this.hinhAnh = hinhAnh;
-    }
-
-    public int getMaDonViTinh() {
-        return maDonViTinh;
-    }
-
-    public void setMaDonViTinh(int maDonViTinh) {
-        this.maDonViTinh = maDonViTinh;
     }
 
     public int getMaLoaiHang() {

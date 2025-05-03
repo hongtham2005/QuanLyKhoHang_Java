@@ -157,7 +157,4 @@ public class ChiTietPhieuXuatGUI extends Frame {
         }
     }
 
-    public static void main(String[] args) {
-        new ChiTietPhieuXuatGUI(1);
-    }
 }

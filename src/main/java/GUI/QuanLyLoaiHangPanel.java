@@ -1,7 +1,9 @@
+
 package GUI;
 
 import DAO.LoaiHangDAO;
 import DTO.LoaiHangDTO;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -15,18 +17,27 @@ public class QuanLyLoaiHangPanel extends JPanel {
     private JTable bangLoaiHang;
     private DefaultTableModel moHinhBang;
     private JTextField txtMaLoaiHang, txtTenLoaiHang;
-    private JButton btnThem, btnSua, btnXoa;
+    private JButton btnThem, btnSua, btnXoa, btnXoaTrang;
     private LoaiHangDAO loaiHangDAO;
 
     public QuanLyLoaiHangPanel() {
-        loaiHangDAO = new LoaiHangDAO();
+        try {
+            loaiHangDAO = new LoaiHangDAO();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Lỗi khởi tạo LoaiHangDAO: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
         setLayout(new BorderLayout());
         setBackground(new Color(240, 242, 245));
 
         JPanel mainPanel = new JPanel(new BorderLayout());
 
         String[] cot = {"Mã loại hàng", "Tên loại hàng"};
-        moHinhBang = new DefaultTableModel(cot, 0);
+        moHinhBang = new DefaultTableModel(cot, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         bangLoaiHang = new JTable(moHinhBang);
         bangLoaiHang.setRowHeight(25);
         bangLoaiHang.setGridColor(new Color(200, 200, 200));
@@ -78,6 +89,7 @@ public class QuanLyLoaiHangPanel extends JPanel {
         btnThem = new JButton("Thêm");
         btnSua = new JButton("Sửa");
         btnXoa = new JButton("Xóa");
+        btnXoaTrang = new JButton("Xóa trắng"); // Sửa: Thêm nút Xóa trắng
 
         btnThem.setBackground(new Color(0, 196, 228));
         btnThem.setForeground(Color.WHITE);
@@ -85,10 +97,13 @@ public class QuanLyLoaiHangPanel extends JPanel {
         btnSua.setForeground(Color.WHITE);
         btnXoa.setBackground(new Color(255, 80, 80));
         btnXoa.setForeground(Color.WHITE);
+        btnXoaTrang.setBackground(new Color(169, 169, 169));
+        btnXoaTrang.setForeground(Color.WHITE);
 
         nutPanel.add(btnThem);
         nutPanel.add(btnSua);
         nutPanel.add(btnXoa);
+        nutPanel.add(btnXoaTrang);
 
         JPanel phiaNam = new JPanel(new BorderLayout());
         phiaNam.setBackground(new Color(240, 242, 245));
@@ -103,13 +118,13 @@ public class QuanLyLoaiHangPanel extends JPanel {
         btnThem.addActionListener(e -> themLoaiHang());
         btnSua.addActionListener(e -> suaLoaiHang());
         btnXoa.addActionListener(e -> xoaLoaiHang());
-
+        btnXoaTrang.addActionListener(e -> xoaForm()); // Sửa: Liên kết nút Xóa trắng
         bangLoaiHang.getSelectionModel().addListSelectionListener(e -> chonLoaiHang());
     }
 
     private void taiDanhSachLoaiHang() {
         try {
-            List<LoaiHangDTO> danhSach = loaiHangDAO.layDanhSachLoaiHang();
+            List<LoaiHangDTO> danhSach = loaiHangDAO.docDSLoaiHang(); // Sửa: Sử dụng docDSLoaiHang
             moHinhBang.setRowCount(0);
             for (LoaiHangDTO lh : danhSach) {
                 moHinhBang.addRow(new Object[]{
@@ -122,38 +137,42 @@ public class QuanLyLoaiHangPanel extends JPanel {
         }
     }
 
+    // Sửa: Kiểm tra dữ liệu, hiển thị MaLoaiHang mới
     private void themLoaiHang() {
         try {
             String tenLoaiHang = txtTenLoaiHang.getText().trim();
-            if (tenLoaiHang.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Vui lòng nhập tên loại hàng!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+            if (!isValidTenLoaiHang(tenLoaiHang)) {
+                JOptionPane.showMessageDialog(this, "Tên loại hàng không hợp lệ! Phải từ 1-100 ký tự.", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-
             LoaiHangDTO lh = new LoaiHangDTO();
             lh.setTenLoaiHang(tenLoaiHang);
             loaiHangDAO.themLoaiHang(lh);
-            JOptionPane.showMessageDialog(this, "Thêm loại hàng thành công!");
+            JOptionPane.showMessageDialog(this, "Thêm loại hàng thành công! Mã loại hàng: " + lh.getMaLoaiHang());
+            txtMaLoaiHang.setText(String.valueOf(lh.getMaLoaiHang()));
             taiDanhSachLoaiHang();
-            xoaForm();
+            // Không xóa form để hiển thị mã mới
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Lỗi: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+            if (e.getSQLState().startsWith("23000")) {
+                JOptionPane.showMessageDialog(this, "Tên loại hàng đã tồn tại!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Lỗi thêm loại hàng: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 
+    // Sửa: Kiểm tra dữ liệu, xử lý lỗi trùng tên
     private void suaLoaiHang() {
         try {
             if (txtMaLoaiHang.getText().trim().isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Vui lòng chọn loại hàng để sửa!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-
             String tenLoaiHang = txtTenLoaiHang.getText().trim();
-            if (tenLoaiHang.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Vui lòng nhập tên loại hàng!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+            if (!isValidTenLoaiHang(tenLoaiHang)) {
+                JOptionPane.showMessageDialog(this, "Tên loại hàng không hợp lệ! Phải từ 1-100 ký tự.", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-
             int maLoaiHang = Integer.parseInt(txtMaLoaiHang.getText());
             LoaiHangDTO lh = new LoaiHangDTO();
             lh.setMaLoaiHang(maLoaiHang);
@@ -163,9 +182,14 @@ public class QuanLyLoaiHangPanel extends JPanel {
             taiDanhSachLoaiHang();
             xoaForm();
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Lỗi: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+            if (e.getSQLState().startsWith("23000")) {
+                JOptionPane.showMessageDialog(this, "Tên loại hàng đã tồn tại!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Lỗi sửa loại hàng: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
+
 
     private void xoaLoaiHang() {
         try {
@@ -183,7 +207,11 @@ public class QuanLyLoaiHangPanel extends JPanel {
                 xoaForm();
             }
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Lỗi: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+            if (e.getMessage().contains("Không thể xóa")) {
+                JOptionPane.showMessageDialog(this, e.getMessage(), "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Lỗi xóa loại hàng: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 
@@ -198,5 +226,10 @@ public class QuanLyLoaiHangPanel extends JPanel {
     private void xoaForm() {
         txtMaLoaiHang.setText("");
         txtTenLoaiHang.setText("");
+    }
+
+    // Sửa: Kiểm tra độ dài phù hợp với VARCHAR(100)
+    private boolean isValidTenLoaiHang(String ten) {
+        return ten != null && !ten.trim().isEmpty() && ten.length() <= 100;
     }
 }

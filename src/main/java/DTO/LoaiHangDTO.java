@@ -1,8 +1,13 @@
+
 package DTO;
 
 public class LoaiHangDTO {
     private int maLoaiHang;
     private String tenLoaiHang;
+
+    public LoaiHangDTO() {
+        // Sửa: Thêm constructor mặc định
+    }
 
     public LoaiHangDTO(int ma, String ten) {
         this.maLoaiHang = ma;

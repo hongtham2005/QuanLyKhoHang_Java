@@ -2,7 +2,7 @@ package BUS;
 
 import DAO.SanPhamDAO;
 import DTO.SanPhamDTO;
-
+import java.util.List;
 import java.util.ArrayList;
 
 public class SanPhamBUS {
@@ -39,5 +39,11 @@ public class SanPhamBUS {
 
     public int layMaTiepTheo() throws Exception {
         return new SanPhamDAO().layMaTiepTheo();
+    }
+
+    public ArrayList<SanPhamDTO> timKiemSanPham(String tenSanPham, Integer maLoaiHang) throws Exception {
+        SanPhamDAO dao = new SanPhamDAO();
+        List<SanPhamDTO> ketQua = dao.timKiemSanPham(tenSanPham, maLoaiHang); // Lấy List từ DAO
+        return new ArrayList<>(ketQua); // Chuyển đổi List thành ArrayList
     }
 }
