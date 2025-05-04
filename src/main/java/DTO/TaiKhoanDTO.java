@@ -7,7 +7,9 @@ public class TaiKhoanDTO {
     private int maNhomQuyen;
     private String email;
 
-    // Constructor đầy đủ 5 tham số
+    public TaiKhoanDTO() {
+    }
+
     public TaiKhoanDTO(int maTaiKhoan, String matKhau, String trangThai, int maNhomQuyen, String email) {
         this.maTaiKhoan = maTaiKhoan;
         this.matKhau = matKhau;
@@ -16,7 +18,7 @@ public class TaiKhoanDTO {
         this.email = email;
     }
 
-    // Getter và Setter
+    // Getters and Setters
     public int getMaTaiKhoan() {
         return maTaiKhoan;
     }

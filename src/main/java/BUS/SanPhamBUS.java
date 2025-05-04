@@ -2,52 +2,53 @@ package BUS;
 
 import DAO.SanPhamDAO;
 import DTO.SanPhamDTO;
+
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 
 public class SanPhamBUS {
-    private ArrayList<SanPhamDTO> ds;
-    private SanPhamDAO dao;
+    private ArrayList<SanPhamDTO> dsSanPham;
 
-    public SanPhamBUS() throws Exception {
-        dao = new SanPhamDAO();
-        ds = dao.docDSSanPham();
+    public SanPhamBUS() throws SQLException {
+        dsSanPham = new SanPhamDAO().docDSSanPham();
     }
 
-    public ArrayList<SanPhamDTO> getDSSanPham() throws Exception {
-        return dao.docDSSanPham(); // Lấy trực tiếp từ DAO để đảm bảo đồng bộ
+    public ArrayList<SanPhamDTO> getDSSanPham() {
+        return dsSanPham;
     }
 
-    public void them(SanPhamDTO sp) throws Exception {
+    public void them(SanPhamDTO sp) throws SQLException {
+        SanPhamDAO dao = new SanPhamDAO();
         dao.them(sp);
-        ds.add(sp);
+        dsSanPham.add(sp);
     }
 
-    public void sua(SanPhamDTO sp) throws Exception {
+    public void sua(SanPhamDTO sp) throws SQLException {
+        SanPhamDAO dao = new SanPhamDAO();
         dao.sua(sp);
-        for (int i = 0; i < ds.size(); i++) {
-            if (ds.get(i).getMaSanPham() == sp.getMaSanPham()) {
-                ds.set(i, sp);
+        for (int i = 0; i < dsSanPham.size(); i++) {
+            if (dsSanPham.get(i).getMaSanPham() == sp.getMaSanPham()) {
+                dsSanPham.set(i, sp);
                 break;
             }
         }
     }
 
-    public void xoa(int maSP) throws Exception {
-        dao.xoa(maSP);
-        ds.removeIf(sp -> sp.getMaSanPham() == maSP);
+    public void xoa(int maSanPham) throws SQLException {
+        SanPhamDAO dao = new SanPhamDAO();
+        dao.xoa(maSanPham);
+        dsSanPham.removeIf(sp -> sp.getMaSanPham() == maSanPham);
     }
 
-    public int layMaTiepTheo() throws Exception {
-        return dao.layMaTiepTheo();
+    public int layMaTiepTheo() throws SQLException {
+        return new SanPhamDAO().layMaTiepTheo();
     }
 
-    public ArrayList<SanPhamDTO> timKiemSanPham(String tenSanPham, Integer maLoaiHang) throws Exception {
-        List<SanPhamDTO> ketQua = dao.timKiemSanPham(tenSanPham, maLoaiHang);
-        return new ArrayList<>(ketQua);
+    public ArrayList<SanPhamDTO> timKiemSanPham(String keyword, Integer maLoaiHang) throws SQLException {
+        return (ArrayList<SanPhamDTO>) new SanPhamDAO().timKiemSanPham(keyword, maLoaiHang);
     }
 
-    public ArrayList<SanPhamDTO> layDanhSachSanPhamTheoPhieuXuat(int maPhieuXuat) throws Exception {
-        return dao.layDanhSachSanPhamTheoPhieuXuat(maPhieuXuat); // Gọi phương thức từ DAO
+    public SanPhamDTO timKiemSanPhamTheoMa(int maSanPham) throws SQLException {
+        return new SanPhamDAO().timKiemSanPhamTheoMa(maSanPham);
     }
 }

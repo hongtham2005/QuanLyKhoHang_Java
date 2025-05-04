@@ -1,23 +1,18 @@
-/*
- * Click nb fs://nb fs/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nb fs://nb fs/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package GUI;
 
-/**
- *
- * @author hong tham
- */
 import com.formdev.flatlaf.FlatLightLaf;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 
 public class MainFrame extends JFrame {
     private JPanel sidebar;
-    private JPanel mainPanel; 
-    public MainFrame() {
+    private JPanel mainPanel;
+    private String taiKhoanEmail;
+
+    public MainFrame(String taiKhoanEmail) {
+        this.taiKhoanEmail = taiKhoanEmail != null ? taiKhoanEmail : "unknown";
+
         try {
             UIManager.setLookAndFeel(new FlatLightLaf());
         } catch (Exception e) {
@@ -30,10 +25,8 @@ public class MainFrame extends JFrame {
         setBackground(Color.WHITE);
         setLocationRelativeTo(null);
 
-        // Thiết lập bố cục chính
         setLayout(new BorderLayout());
 
-        // Thêm mục "Giới thiệu" vào menu Trợ giúp
         JMenuItem aboutItem = new JMenuItem("Giới thiệu");
         aboutItem.setForeground(Color.BLACK);
         aboutItem.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -45,40 +38,35 @@ public class MainFrame extends JFrame {
                 JOptionPane.INFORMATION_MESSAGE);
         });
 
-
-        // Thêm thanh công cụ (toolbar) ngay dưới menu bar
         JToolBar toolBar = new JToolBar();
-        toolBar.setFloatable(false); 
-        toolBar.setBackground(Color.white); 
-        toolBar.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8)); 
+        toolBar.setFloatable(false);
+        toolBar.setBackground(Color.white);
+        toolBar.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
 
-        // Tạo các nút cho toolbar
         JButton toolbarOverviewBtn = new JButton("Tổng quan");
         JButton toolbarInventoryBtn = new JButton("Tồn kho");
         JButton toolbarRevenueBtn = new JButton("Doanh thu");
         JButton toolbarSuppliersBtn = new JButton("Nhà cung cấp");
         JButton toolbarCustomersBtn = new JButton("Khách hàng");
 
-        // Tùy chỉnh giao diện cho các nút
         JButton[] toolBarButtons = {toolbarOverviewBtn, toolbarInventoryBtn, toolbarRevenueBtn, toolbarSuppliersBtn, toolbarCustomersBtn};
         for (JButton btn : toolBarButtons) {
-            btn.setBackground(Color.WHITE); 
-            btn.setForeground(Color.BLACK); 
-            btn.setFont(new Font("Arial", Font.PLAIN, 14)); 
-            btn.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200))); 
-            btn.setFocusPainted(false); 
-            btn.setMargin(new Insets(5, 10, 5, 10)); 
+            btn.setBackground(Color.WHITE);
+            btn.setForeground(Color.BLACK);
+            btn.setFont(new Font("Arial", Font.PLAIN, 14));
+            btn.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
+            btn.setFocusPainted(false);
+            btn.setMargin(new Insets(5, 10, 5, 10));
 
-            // Hiệu ứng hover
             btn.addMouseListener(new java.awt.event.MouseAdapter() {
                 @Override
                 public void mouseEntered(java.awt.event.MouseEvent evt) {
-                    btn.setBackground(new Color(220, 220, 220)); 
+                    btn.setBackground(new Color(220, 220, 220));
                 }
 
                 @Override
                 public void mouseExited(java.awt.event.MouseEvent evt) {
-                    btn.setBackground(Color.WHITE); 
+                    btn.setBackground(Color.WHITE);
                 }
             });
 
@@ -86,7 +74,6 @@ public class MainFrame extends JFrame {
             toolBar.add(Box.createHorizontalStrut(5));
         }
 
-        // Thêm toolbar vào frame, ngay dưới menu bar
         add(toolBar, BorderLayout.NORTH);
 
         sidebar = new JPanel() {
@@ -101,10 +88,9 @@ public class MainFrame extends JFrame {
         };
         sidebar.setBackground(Color.white);
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
-        sidebar.setPreferredSize(new Dimension(220, 600)); 
-        sidebar.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200))); // Viền xám nhạt
+        sidebar.setPreferredSize(new Dimension(220, 600));
+        sidebar.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
 
-        // Các nút trong sidebar
         JButton productsBtn = createButtonWithIcon("Quản lý sản phẩm", "/images/shopping-cart.png");
         JButton purchaseOrdersBtn = createButtonWithIcon("Quản lý phiếu nhập", "/images/import.png");
         JButton salesOrdersBtn = createButtonWithIcon("Quản lý phiếu xuất", "/images/export.png");
@@ -114,12 +100,11 @@ public class MainFrame extends JFrame {
         JButton inventoryStatsBtn = createButtonWithIcon("Thống kê tồn kho", "/images/attribute.png");
         JButton logoutBtn = createButtonWithIcon("Đăng xuất", "/images/logout.png");
 
-        // Thêm sự kiện cho nút "Quản lý sản phẩm"
         productsBtn.addActionListener(e -> {
             try {
                 System.out.println("Đang mở panel Quản lý sản phẩm...");
                 mainPanel.removeAll();
-                QuanLySanPhamPanel panel = new QuanLySanPhamPanel(1);
+                QuanLySanPhamPanel panel = new QuanLySanPhamPanel(null, taiKhoanEmail);
                 mainPanel.add(panel, BorderLayout.CENTER);
                 mainPanel.revalidate();
                 mainPanel.repaint();
@@ -131,7 +116,6 @@ public class MainFrame extends JFrame {
             }
         });
 
-        // Tùy chỉnh nút
         JButton[] buttons = {productsBtn, purchaseOrdersBtn, salesOrdersBtn, customersBtn, suppliersBtn, revenueStatsBtn, inventoryStatsBtn, logoutBtn};
         for (JButton btn : buttons) {
             configureButton(btn);
@@ -139,19 +123,16 @@ public class MainFrame extends JFrame {
             sidebar.add(btn);
             sidebar.add(Box.createVerticalStrut(5));
         }
-        sidebar.add(Box.createVerticalGlue()); // Đẩy các nút lên trên
+        sidebar.add(Box.createVerticalGlue());
 
-        // Thêm sidebar vào frame
         add(sidebar, BorderLayout.WEST);
 
-        // Thêm panel chính (màu nền nhẹ)
         mainPanel = new JPanel();
-        mainPanel.setBackground(Color.white); 
-        mainPanel.setLayout(new BorderLayout()); 
+        mainPanel.setBackground(Color.white);
+        mainPanel.setLayout(new BorderLayout());
         add(mainPanel, BorderLayout.CENTER);
     }
 
-    // Phương thức tạo nút với icon
     private JButton createButtonWithIcon(String text, String iconPath) {
         JButton button = new JButton(text);
         try {
@@ -172,23 +153,21 @@ public class MainFrame extends JFrame {
         return button;
     }
 
-    // Phương thức cấu hình nút
     private void configureButton(JButton btn) {
         btn.setAlignmentX(Component.CENTER_ALIGNMENT);
         btn.setMaximumSize(new Dimension(200, 45));
         btn.setBackground(new Color(255, 255, 255));
-        btn.setForeground(new Color(0, 0, 0)); 
+        btn.setForeground(new Color(0, 0, 0));
         btn.setFont(new Font("Arial", Font.PLAIN, 14));
         btn.setFocusPainted(false);
         btn.setHorizontalAlignment(SwingConstants.LEFT);
         btn.setBorder(BorderFactory.createEmptyBorder(0, 15, 0, 0));
         btn.setOpaque(true);
 
-        // Hiệu ứng hover và pressed
         btn.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                btn.setBackground(new Color(200, 200, 200)); 
+                btn.setBackground(new Color(200, 200, 200));
                 btn.setForeground(Color.BLACK);
             }
 
@@ -200,7 +179,7 @@ public class MainFrame extends JFrame {
 
             @Override
             public void mousePressed(java.awt.event.MouseEvent evt) {
-                btn.setBackground(new Color(150, 150, 150));             
+                btn.setBackground(new Color(150, 150, 150));
             }
 
             @Override
@@ -208,7 +187,5 @@ public class MainFrame extends JFrame {
                 btn.setBackground(new Color(200, 200, 200));
             }
         });
-        
     }
-
 }

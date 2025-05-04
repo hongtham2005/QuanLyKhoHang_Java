@@ -1,3 +1,4 @@
+
 package GUI;
 
 import DAO.TaiKhoanDAO;
@@ -28,7 +29,7 @@ public class DangNhapGUI extends JFrame {
 
         JPanel panelMain = new JPanel();
         panelMain.setLayout(new BoxLayout(panelMain, BoxLayout.Y_AXIS));
-        panelMain.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40)); // Padding
+        panelMain.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
         panelMain.setBackground(Color.WHITE);
 
         JLabel lblTitle = new JLabel("Đăng nhập hệ thống");
@@ -83,14 +84,14 @@ public class DangNhapGUI extends JFrame {
 
             try {
                 TaiKhoanDAO dao = new TaiKhoanDAO();
-                TaiKhoanDTO tk = dao.timTheoEmailVaMatKhau(email, matKhau);
+                TaiKhoanDTO tk = dao.kiemTraDangNhap(email, matKhau);
 
-                if (tk != null && !"Đã xóa".equalsIgnoreCase(tk.getTrangThai())) {
+                if (tk != null && "Hoạt động".equalsIgnoreCase(tk.getTrangThai())) {
                     JOptionPane.showMessageDialog(this, "Đăng nhập thành công!");
                     dispose();
-                    new MenuChinhGUI(tk.getMaNhomQuyen(), email).setVisible(true); // Truyền email
+                    new MainFrame(email).setVisible(true);
                 } else {
-                    JOptionPane.showMessageDialog(this, "Sai email hoặc mật khẩu, hoặc tài khoản đã bị xóa.");
+                    JOptionPane.showMessageDialog(this, "Sai email hoặc mật khẩu, hoặc tài khoản không hoạt động.");
                 }
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "Lỗi kết nối: " + ex.getMessage());

@@ -19,7 +19,11 @@ public class SanPhamDAO {
             ps.setDate(3, sp.getHanSuDung() != null ? new java.sql.Date(sp.getHanSuDung().getTime()) : null);
             ps.setDouble(4, sp.getGiaNhap());
             ps.setDouble(5, sp.getGiaXuat());
-            ps.setString(6, sp.getHinhAnh());
+            if (sp.getHinhAnh() != null && !sp.getHinhAnh().isEmpty()) {
+                ps.setString(6, sp.getHinhAnh());
+            } else {
+                ps.setNull(6, Types.VARCHAR);
+            }
             ps.setInt(7, sp.getMaLoaiHang());
             ps.executeUpdate();
             try (ResultSet rs = ps.getGeneratedKeys()) {
@@ -60,7 +64,11 @@ public class SanPhamDAO {
             ps.setDate(3, sp.getHanSuDung() != null ? new java.sql.Date(sp.getHanSuDung().getTime()) : null);
             ps.setDouble(4, sp.getGiaNhap());
             ps.setDouble(5, sp.getGiaXuat());
-            ps.setString(6, sp.getHinhAnh());
+            if (sp.getHinhAnh() != null && !sp.getHinhAnh().isEmpty()) {
+                ps.setString(6, sp.getHinhAnh());
+            } else {
+                ps.setNull(6, Types.VARCHAR);
+            }
             ps.setInt(7, sp.getMaLoaiHang());
             ps.setInt(8, sp.getMaSanPham());
             ps.executeUpdate();
@@ -112,6 +120,28 @@ public class SanPhamDAO {
             }
         }
         return ds;
+    }
+
+    public SanPhamDTO timKiemSanPhamTheoMa(int maSanPham) throws SQLException {
+        try (Connection conn = MySQLConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement("SELECT * FROM SanPham WHERE MaSanPham = ?")) {
+            ps.setInt(1, maSanPham);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new SanPhamDTO(
+                        rs.getInt("MaSanPham"),
+                        rs.getString("TenSanPham"),
+                        rs.getString("XuatXu"),
+                        rs.getDate("HanSuDung"),
+                        rs.getDouble("GiaNhap"),
+                        rs.getDouble("GiaXuat"),
+                        rs.getString("HinhAnh"),
+                        rs.getInt("MaLoaiHang")
+                    );
+                }
+            }
+        }
+        return null;
     }
 
     public String layHinhAnhSanPham(int maSanPham) throws SQLException {

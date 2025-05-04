@@ -2,7 +2,6 @@ package GUI;
 
 import BUS.SanPhamBUS;
 import DAO.LoaiHangDAO;
-import DAO.ChiTietQuyenDAO;
 import DTO.LoaiHangDTO;
 import DTO.SanPhamDTO;
 import com.formdev.flatlaf.FlatLightLaf;
@@ -18,7 +17,6 @@ import java.awt.image.BufferedImage;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.sql.SQLException;
 
 public class SanPhamGUI extends JFrame {
     private JTextField tfMa, tfTen, tfXuatXu, tfGiaNhap, tfGiaXuat, tfHinhAnh;
@@ -28,22 +26,13 @@ public class SanPhamGUI extends JFrame {
     private DefaultTableModel moHinhBang;
     private SanPhamBUS bus;
     private ArrayList<LoaiHangDTO> dsLoaiHang;
-    private ChiTietQuyenDAO chiTietQuyenDAO;
-    private int maNhomQuyen;
-    private boolean canAdd, canEdit, canDelete, canView;
     private JLabel lblHinhAnhPreview;
 
-    public SanPhamGUI(int maNhomQuyen) {
-        this.maNhomQuyen = maNhomQuyen;
+    public SanPhamGUI() {
         try {
             FlatLightLaf.setup();
-            chiTietQuyenDAO = new ChiTietQuyenDAO();
-            canAdd = chiTietQuyenDAO.kiemTraQuyen(maNhomQuyen, 1, "THEM");
-            canEdit = chiTietQuyenDAO.kiemTraQuyen(maNhomQuyen, 1, "SUA");
-            canDelete = chiTietQuyenDAO.kiemTraQuyen(maNhomQuyen, 1, "XOA");
-            canView = chiTietQuyenDAO.kiemTraQuyen(maNhomQuyen, 1, "XEM");
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Lỗi khởi tạo Look and Feel hoặc DAO: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Lỗi khởi tạo Look and Feel: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
 
         setTitle("Quản lý Sản Phẩm");
@@ -138,9 +127,6 @@ public class SanPhamGUI extends JFrame {
         btnTai.setForeground(Color.WHITE);
         btnXoaForm.setBackground(new Color(169, 169, 169));
         btnXoaForm.setForeground(Color.WHITE);
-        btnThem.setEnabled(canAdd);
-        btnSua.setEnabled(canEdit);
-        btnXoa.setEnabled(canDelete);
         nutPanel.add(btnThem);
         nutPanel.add(btnSua);
         nutPanel.add(btnXoa);
@@ -215,7 +201,7 @@ public class SanPhamGUI extends JFrame {
                 public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                     super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                     if (value instanceof LoaiHangDTO) {
-                        setText(((LoaiHangDTO) value).toString());
+                        setText(((LoaiHangDTO) value).getTenLoaiHang());
                     }
                     return this;
                 }
@@ -236,13 +222,7 @@ public class SanPhamGUI extends JFrame {
         btnXoaForm.addActionListener(e -> clearFieldsExceptMa());
         btnTimKiem.addActionListener(e -> timKiemSanPham(tfTimKiem.getText().trim()));
         btnTimMa.addActionListener(e -> timKiemTheoMa(tfTimMa.getText().trim()));
-        tblSanPham.getSelectionModel().addListSelectionListener(e -> {
-            if (canView) {
-                chonSanPham();
-            } else {
-                JOptionPane.showMessageDialog(this, "Bạn không có quyền xem chi tiết sản phẩm!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-            }
-        });
+        tblSanPham.getSelectionModel().addListSelectionListener(e -> chonSanPham());
     }
 
     private void chonHinhAnh() {
@@ -252,6 +232,10 @@ public class SanPhamGUI extends JFrame {
         int result = fileChooser.showOpenDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
+            if (!selectedFile.exists()) {
+                JOptionPane.showMessageDialog(this, "Tệp hình ảnh không tồn tại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             String imagePath = selectedFile.getAbsolutePath();
             tfHinhAnh.setText(imagePath);
             hienThiHinhAnh(imagePath);
@@ -263,7 +247,9 @@ public class SanPhamGUI extends JFrame {
             if (imagePath != null && !imagePath.isEmpty()) {
                 File imageFile = new File(imagePath);
                 if (!imageFile.exists()) {
-                    throw new IOException("Tệp hình ảnh không tồn tại: " + imagePath);
+                    lblHinhAnhPreview.setIcon(null);
+                    tfHinhAnh.setText("");
+                    return;
                 }
                 BufferedImage img = ImageIO.read(imageFile);
                 int maxWidth = 180;
@@ -291,11 +277,11 @@ public class SanPhamGUI extends JFrame {
             moHinhBang.setRowCount(0);
             for (SanPhamDTO sp : bus.getDSSanPham()) {
                 moHinhBang.addRow(new Object[]{
-                    sp.getMaSanPham(),
-                    sp.getTenSanPham(),
-                    new SimpleDateFormat("yyyy-MM-dd").format(sp.getHanSuDung()),
-                    sp.getGiaNhap(),
-                    sp.getGiaXuat()
+                        sp.getMaSanPham(),
+                        sp.getTenSanPham(),
+                        new SimpleDateFormat("yyyy-MM-dd").format(sp.getHanSuDung()),
+                        sp.getGiaNhap(),
+                        sp.getGiaXuat()
                 });
             }
             tfMa.setText(String.valueOf(bus.layMaTiepTheo()));
@@ -332,10 +318,6 @@ public class SanPhamGUI extends JFrame {
         }
         if (ten.length() > 255) {
             JOptionPane.showMessageDialog(this, "Tên sản phẩm không được vượt quá 255 ký tự!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
-            return false;
-        }
-        if (ten.matches("^[0-9]+$")) {
-            JOptionPane.showMessageDialog(this, "Tên sản phẩm không được chỉ chứa số!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
             return false;
         }
         String xuatXu = tfXuatXu.getText().trim();
@@ -455,11 +437,11 @@ public class SanPhamGUI extends JFrame {
             moHinhBang.setRowCount(0);
             for (SanPhamDTO sp : danhSach) {
                 moHinhBang.addRow(new Object[]{
-                    sp.getMaSanPham(),
-                    sp.getTenSanPham(),
-                    new SimpleDateFormat("yyyy-MM-dd").format(sp.getHanSuDung()),
-                    sp.getGiaNhap(),
-                    sp.getGiaXuat()
+                        sp.getMaSanPham(),
+                        sp.getTenSanPham(),
+                        new SimpleDateFormat("yyyy-MM-dd").format(sp.getHanSuDung()),
+                        sp.getGiaNhap(),
+                        sp.getGiaXuat()
                 });
             }
             if (danhSach.isEmpty()) {
@@ -473,21 +455,19 @@ public class SanPhamGUI extends JFrame {
     private void timKiemTheoMa(String maStr) {
         try {
             int ma = Integer.parseInt(maStr);
-            ArrayList<SanPhamDTO> danhSach = bus.getDSSanPham();
+            SanPhamDTO sp = bus.timKiemSanPhamTheoMa(ma);
             moHinhBang.setRowCount(0);
-            for (SanPhamDTO sp : danhSach) {
-                if (sp.getMaSanPham() == ma) {
-                    moHinhBang.addRow(new Object[]{
+            if (sp != null) {
+                moHinhBang.addRow(new Object[]{
                         sp.getMaSanPham(),
                         sp.getTenSanPham(),
                         new SimpleDateFormat("yyyy-MM-dd").format(sp.getHanSuDung()),
                         sp.getGiaNhap(),
                         sp.getGiaXuat()
-                    });
-                    return;
-                }
+                });
+            } else {
+                JOptionPane.showMessageDialog(this, "Không tìm thấy sản phẩm với mã: " + ma, "Thông báo", JOptionPane.INFORMATION_MESSAGE);
             }
-            JOptionPane.showMessageDialog(this, "Không tìm thấy sản phẩm với mã: " + ma, "Thông báo", JOptionPane.INFORMATION_MESSAGE);
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Mã sản phẩm phải là số nguyên!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
         } catch (Exception e) {
@@ -528,5 +508,4 @@ public class SanPhamGUI extends JFrame {
             }
         }
     }
-
 }

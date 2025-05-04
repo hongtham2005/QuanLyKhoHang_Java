@@ -10,12 +10,7 @@ public class PhieuXuatBUS {
     private ArrayList<PhieuXuatDTO> dsPhieuXuat;
 
     public PhieuXuatBUS() throws Exception {
-        PhieuXuatDAO dao = new PhieuXuatDAO();
-        try {
-            dsPhieuXuat = dao.docDSPhieuXuat();
-        } finally {
-            dao.closeConnection();
-        }
+        dsPhieuXuat = new PhieuXuatDAO().docDSPhieuXuat();
     }
 
     public ArrayList<PhieuXuatDTO> getDSPhieuXuat() {
@@ -24,54 +19,32 @@ public class PhieuXuatBUS {
 
     public void them(PhieuXuatDTO px) throws Exception {
         PhieuXuatDAO dao = new PhieuXuatDAO();
-        try {
-            dao.them(px);
-            dsPhieuXuat.add(px);
-        } finally {
-            dao.closeConnection();
-        }
+        dao.them(px);
+        dsPhieuXuat.add(px);
     }
 
     public void sua(PhieuXuatDTO px) throws Exception {
         PhieuXuatDAO dao = new PhieuXuatDAO();
-        try {
-            dao.sua(px);
-            for (int i = 0; i < dsPhieuXuat.size(); i++) {
-                if (dsPhieuXuat.get(i).getMaPhieuXuat() == px.getMaPhieuXuat()) {
-                    dsPhieuXuat.set(i, px);
-                    break;
-                }
+        dao.sua(px);
+        for (int i = 0; i < dsPhieuXuat.size(); i++) {
+            if (dsPhieuXuat.get(i).getMaPhieuXuat() == px.getMaPhieuXuat()) {
+                dsPhieuXuat.set(i, px);
+                break;
             }
-        } finally {
-            dao.closeConnection();
         }
     }
 
     public void xoa(int maPhieuXuat) throws Exception {
         PhieuXuatDAO dao = new PhieuXuatDAO();
-        try {
-            dao.xoa(maPhieuXuat);
-            dsPhieuXuat.removeIf(px -> px.getMaPhieuXuat() == maPhieuXuat);
-        } finally {
-            dao.closeConnection();
-        }
+        dao.xoa(maPhieuXuat);
+        dsPhieuXuat.removeIf(px -> px.getMaPhieuXuat() == maPhieuXuat);
     }
 
     public int layMaTiepTheo() throws Exception {
-        PhieuXuatDAO dao = new PhieuXuatDAO();
-        try {
-            return dao.layMaTiepTheo();
-        } finally {
-            dao.closeConnection();
-        }
+        return new PhieuXuatDAO().layMaTiepTheo();
     }
 
     public ArrayList<ChiTietPhieuXuatDTO> layDanhSachSanPhamTheoPhieuXuat(int maPhieuXuat) throws Exception {
-        ChiTietPhieuXuatDAO dao = new ChiTietPhieuXuatDAO();
-        try {
-            return dao.layDanhSachSanPhamTheoPhieuXuat(maPhieuXuat);
-        } finally {
-            dao.closeConnection();
-        }
+        return new ChiTietPhieuXuatDAO().layDanhSachSanPhamTheoPhieuXuat(maPhieuXuat);
     }
 }

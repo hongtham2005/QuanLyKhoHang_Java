@@ -6,7 +6,7 @@ public class PhieuXuatDTO {
     private int maPhieuXuat;
     private Date thoiGian;
     private String trangThai;
-    private Integer nguoiTao; 
+    private Integer nguoiTao;
     private int maKhachHang;
 
     public PhieuXuatDTO() {}

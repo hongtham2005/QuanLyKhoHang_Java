@@ -6,6 +6,7 @@ import DTO.ChiTietPhieuXuatDTO;
 import java.util.ArrayList;
 
 public class ChiTietPhieuXuatBUS {
+
     public ArrayList<ChiTietPhieuXuatDTO> docTheoPhieu(int maPhieuXuat) throws Exception {
         return new ChiTietPhieuXuatDAO().layDanhSachSanPhamTheoPhieuXuat(maPhieuXuat);
     }

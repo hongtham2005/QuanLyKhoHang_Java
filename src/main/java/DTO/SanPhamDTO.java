@@ -21,7 +21,7 @@ public class SanPhamDTO {
         this.giaNhap = 0.0;
         this.giaXuat = 0.0;
         this.hinhAnh = "";
-        this.maLoaiHang = 0;
+        this.maLoaiHang = -1; 
     }
 
     public SanPhamDTO(int maSanPham, String tenSanPham, String xuatXu, Date hanSuDung,

@@ -1,24 +1,18 @@
 package GUI;
 
-import DAO.ChiTietQuyenDAO;
 import com.formdev.flatlaf.FlatLightLaf;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.sql.SQLException;
 
 public class MenuChinhGUI extends JFrame {
     private QuanLySanPhamPanel sanPhamPanel;
     private KhachHangGUI khachHangGUI;
     private PhieuXuatGUI phieuXuatGUI;
-    private int maNhomQuyen;
     private String taiKhoanEmail;
-    private ChiTietQuyenDAO chiTietQuyenDAO;
 
-    public MenuChinhGUI(int maNhomQuyen, String taiKhoanEmail) {
-        this.maNhomQuyen = maNhomQuyen;
+    public MenuChinhGUI(String taiKhoanEmail) {
         this.taiKhoanEmail = taiKhoanEmail;
-        this.chiTietQuyenDAO = new ChiTietQuyenDAO();
 
         try {
             FlatLightLaf.setup();
@@ -46,34 +40,15 @@ public class MenuChinhGUI extends JFrame {
 
         mainPanel.add(Box.createRigidArea(new Dimension(0, 25)));
 
-        String tenNutKhachHang = (maNhomQuyen == 3) ? "Thông tin cá nhân" : "Quản lý khách hàng";
-        JButton btnKhachHang = taoNut(tenNutKhachHang);
+        JButton btnKhachHang = taoNut("Quản lý khách hàng");
         JButton btnSanPham = taoNut("Quản lý sản phẩm");
         JButton btnPhieuXuat = taoNut("Quản lý phiếu xuất");
 
-        try {
-            if (chiTietQuyenDAO.kiemTraQuyen(maNhomQuyen, 2, "XEM")) {
-                mainPanel.add(btnKhachHang);
-                mainPanel.add(Box.createRigidArea(new Dimension(0, 15)));
-            } else {
-                btnKhachHang.setEnabled(false);
-            }
-
-            if (chiTietQuyenDAO.kiemTraQuyen(maNhomQuyen, 1, "XEM")) {
-                mainPanel.add(btnSanPham);
-                mainPanel.add(Box.createRigidArea(new Dimension(0, 15)));
-            } else {
-                btnSanPham.setEnabled(false);
-            }
-
-            if (chiTietQuyenDAO.kiemTraQuyen(maNhomQuyen, 3, "XEM")) {
-                mainPanel.add(btnPhieuXuat);
-            } else {
-                btnPhieuXuat.setEnabled(false);
-            }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Lỗi kiểm tra quyền: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
-        }
+        mainPanel.add(btnKhachHang);
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+        mainPanel.add(btnSanPham);
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+        mainPanel.add(btnPhieuXuat);
 
         add(mainPanel, BorderLayout.CENTER);
 
@@ -116,59 +91,35 @@ public class MenuChinhGUI extends JFrame {
     }
 
     private void moKhachHangGUI() {
-        try {
-            if (chiTietQuyenDAO.kiemTraQuyen(maNhomQuyen, 2, "XEM")) {
-                if (khachHangGUI == null || !khachHangGUI.isVisible()) {
-                    khachHangGUI = new KhachHangGUI(maNhomQuyen, this, taiKhoanEmail);
-                    khachHangGUI.setVisible(true);
-                } else {
-                    khachHangGUI.toFront();
-                    khachHangGUI.requestFocus();
-                }
-            } else {
-                JOptionPane.showMessageDialog(this, "Bạn không có quyền truy cập chức năng này!");
-            }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Lỗi kiểm tra quyền: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+        if (khachHangGUI == null || !khachHangGUI.isVisible()) {
+            khachHangGUI = new KhachHangGUI(this, taiKhoanEmail);
+            khachHangGUI.setVisible(true);
+        } else {
+            khachHangGUI.toFront();
+            khachHangGUI.requestFocus();
         }
     }
 
     private void moSanPhamPanel() {
-        try {
-            if (chiTietQuyenDAO.kiemTraQuyen(maNhomQuyen, 1, "XEM")) {
-                if (sanPhamPanel == null || !sanPhamPanel.isVisible()) {
-                    JDialog dialog = new JDialog(this, "Quản lý sản phẩm", true);
-                    sanPhamPanel = new QuanLySanPhamPanel(maNhomQuyen);
-                    dialog.add(sanPhamPanel);
-                    dialog.setSize(900, 600);
-                    dialog.setLocationRelativeTo(this);
-                    dialog.setVisible(true);
-                } else {
-                    sanPhamPanel.requestFocus();
-                }
-            } else {
-                JOptionPane.showMessageDialog(this, "Bạn không có quyền truy cập chức năng này!");
-            }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Lỗi kiểm tra quyền: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+        if (sanPhamPanel == null || !sanPhamPanel.isVisible()) {
+            JDialog dialog = new JDialog(this, "Quản lý sản phẩm", true);
+            sanPhamPanel = new QuanLySanPhamPanel(this, taiKhoanEmail);
+            dialog.add(sanPhamPanel);
+            dialog.setSize(900, 600);
+            dialog.setLocationRelativeTo(this);
+            dialog.setVisible(true);
+        } else {
+            sanPhamPanel.requestFocus();
         }
     }
 
     private void moPhieuXuatGUI() {
-        try {
-            if (chiTietQuyenDAO.kiemTraQuyen(maNhomQuyen, 3, "XEM")) {
-                if (phieuXuatGUI == null || !phieuXuatGUI.isVisible()) {
-                    phieuXuatGUI = new PhieuXuatGUI(maNhomQuyen, this, taiKhoanEmail);
-                    phieuXuatGUI.setVisible(true);
-                } else {
-                    phieuXuatGUI.toFront();
-                    phieuXuatGUI.requestFocus();
-                }
-            } else {
-                JOptionPane.showMessageDialog(this, "Bạn không có quyền truy cập chức năng này!");
-            }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Lỗi kiểm tra quyền: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+        if (phieuXuatGUI == null || !phieuXuatGUI.isVisible()) {
+            phieuXuatGUI = new PhieuXuatGUI(this, taiKhoanEmail);
+            phieuXuatGUI.setVisible(true);
+        } else {
+            phieuXuatGUI.toFront();
+            phieuXuatGUI.requestFocus();
         }
     }
 }
